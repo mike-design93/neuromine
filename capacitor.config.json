@@ -4,5 +4,5 @@
 {
   "appId": "com.example.app",
   "appName": "neuromine",
-  "webDir": "www"
+  "webDir": "dist"
 }
