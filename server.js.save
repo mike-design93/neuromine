@@ -1,0 +1,152 @@
+const express = require('express');
+const axios = require('axios');
+
+const app = express();
+
+let wallet = {
+  balance: 1000,
+  btc: 0
+};
+
+let history = [];
+let prices = [];
+
+function movingAverage() {
+  if (prices.length < 5) return null;
+  return prices.reduce((a, b) => a + b, 0) / prices.length;
+}
+
+function decision(price) {
+  prices.push(price);
+  if (prices.length > 10) prices.shift();
+
+  let action = "HOLD";
+  let reason = "Mercado neutro";
+
+
+  const avg = movingAverage();
+
+  if (avg) {
+    if (price < avg * 0.95) {
+      action = "BUY";
+      reason = "Preço abaixo da média";
+    } 
+    else if (price > avg * 1.05) {
+      action = "SELL";
+      reason = "Preço acima da média";
+    }
+  }
+
+  return { action, reason };
+}
+
+app.get('/', async (req, res) => {
+  try {
+    const r = await axios.get(
+      'https://api.coindesk.com/v1/bpi/currentprice.json'
+    );
+
+    const price = parseFloat(r.data.bpi.USD.rate.replace(',', ''));
+
+    const { action, reason } = decision(price);
+
+    if (action === "BUY") {
+      let amount = wallet.balance * 0.2;
+      wallet.btc += amount / price;
+      wallet.balance -= amount;
+    }
+
+    if (action === "SELL") {
+      let amount = wallet.btc * 0.5;
+      wallet.balance += amount * price;
+      wallet.btc -= amount;
+    }
+
+    let total = wallet.balance + wallet.btc * price;
+
+    history.push({
+      price,
+      action,
+      reason,
+      total: total.toFixed(2)
+    });
+
+    if (history.length > 20) history.shift();
+
+    res.json({
+      status: "NEUROMINE X",
+      price,
+      action,
+      reason,
+      balance: wallet.balance.toFixed(2),
+      btc: wallet.btc.toFixed(6),
+      total: total.toFixed(2),
+      history
+    });
+
+  } catch {
+    res.json({ error: "erro api" });
+  }
+});
+
+app.listen(3000, () => console.log("Rodando na porta 3000"));
+node server.js
+
+http://localhost:3000
+
+npm install -g expo-cli
+npx create-expo-app app
+cd app
+npm install react-native-chart-kit
+npx expo star
+
+nano App.js
+
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView } from 'react-native';
+
+export default function App() {
+  const [data, setData] = useState({});
+
+  const fetchData = async () => {
+    const res = await fetch('http://SEU_IP:3000');
+    const json = await res.json();
+    setData(json);
+  };
+
+  useEffect(() => {
+    setInterval(fetchData, 3000);
+  }, []);
+
+  return (
+    <ScrollView style={{marginTop:50}}>
+      <Text>🚀 {data.status}</Text>
+      <Text>💲 BTC: {data.price}</Text>
+
+      <Text>🤖 {data.action}</Text>
+      <Text>🧠 {data.reason}</Text>
+
+      <Text>💵 {data.balance}</Text>
+      <Text>🪙 {data.btc}</Text>
+      <Text>📊 {data.total}</Text>
+
+      <Text>📜 Histórico:</Text>
+
+      {data.history && data.history.map((item, i) => (
+        <View key={i}>
+          <Text>{item.action} - {item.price}</Text>
+          <Text>{item.reason}</Text>
+        </View>
+      ))}
+
+    </ScrollView>
+  );
+}
+SEU_IP
+ip a
+192.168.x.x
+
+	
+
+
+
