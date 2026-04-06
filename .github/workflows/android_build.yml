@@ -13,10 +13,10 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      -       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24 # Atualizado para a versão mais recente
 
       - name: Install Dependencies
         run: npm install
