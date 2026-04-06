@@ -5,14 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
     "build": "mkdir -p dist && cp index.html dist/ 2>/dev/null || echo 'No index.html found'"
   },
-
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -26,3 +21,4 @@
     "express": "^5.2.1"
   }
 }
+
