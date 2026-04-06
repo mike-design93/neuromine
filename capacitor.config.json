@@ -2,7 +2,7 @@
 
 "webDir": "buil
 {
-  "appId": "com.example.app",
+  "appId": "com.neuromine.app"
   "appName": "neuromine",
   "webDir": "www"
 }
